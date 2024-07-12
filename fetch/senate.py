@@ -1,12 +1,13 @@
 import csv
 import requests
 
-class Transaction:
+senate_csv_url = "https://senate-stock-watcher-data.s3-us-west-2.amazonaws.com/aggregate/all_transactions.csv"
+
+class SenateTransaction:
     def __init__(self, data, field_map):
         for key in field_map:
             # Set attributes of the class to CSV headers
             setattr(self, key, data[field_map[key]])
-
 
 def fetch_transactions(url):
     response = requests.get(url)
@@ -22,7 +23,7 @@ def fetch_transactions(url):
     transactions = []
     for row in csv_reader:
         if row:  # Check if the row is not empty
-            transactions.append(Transaction(row, field_map))
+            transactions.append(SenateTransaction(row, field_map))
     
     return transactions
 
@@ -49,6 +50,5 @@ def print_transactions(transactions, count=5):
     print("--------------------------------------------------")
 
 if __name__ == "__main__":
-    senate_csv_url = "https://senate-stock-watcher-data.s3-us-west-2.amazonaws.com/aggregate/all_transactions.csv"
     transactions = fetch_transactions(senate_csv_url)
-    print_transactions(transactions)
+    # print_transactions(transactions)

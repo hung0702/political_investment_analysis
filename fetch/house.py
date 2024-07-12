@@ -1,7 +1,9 @@
 import csv
 import requests
 
-class Transaction:
+house_csv_url = "https://house-stock-watcher-data.s3-us-west-2.amazonaws.com/data/all_transactions.csv"
+
+class HouseTransaction:
     def __init__(self, data, field_map):
         for key in field_map:
             # Set attributes of the class to CSV headers
@@ -21,7 +23,7 @@ def fetch_transactions(url):
     transactions = []
     for row in csv_reader:
         if row:
-            transactions.append(Transaction(row, field_map))
+            transactions.append(HouseTransaction(row, field_map))
     
     return transactions
 
@@ -49,6 +51,5 @@ def print_transactions(transactions, count=5):
     print("--------------------------------------------------")
 
 if __name__ == "__main__":
-    csv_url = "https://house-stock-watcher-data.s3-us-west-2.amazonaws.com/data/all_transactions.csv"
-    transactions = fetch_transactions(csv_url)
-    print_transactions(transactions)
+    transactions = fetch_transactions(house_csv_url)
+    # print_transactions(transactions)
