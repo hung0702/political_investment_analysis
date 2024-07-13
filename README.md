@@ -19,7 +19,7 @@ Stock transaction data are the House and Senate stock watchers. This data is min
 - House and Senate Stock Watcher APIs are not comprehensive, nor are they always accurate.
 
 ## Additional Data Sources to Integrate
-~- **SEC Edgar Forms 4 & 5**: Transactions by investors owning more than 10%, company directors, and executives.~
+~- **SEC Edgar Forms 4 & 5**: Transactions by investors owning more than 10%, company directors, and executives.~  
 ~- **Executive Trade Data**: Focus on transaction type, number of shares, price, transaction date, and post-transaction share total.~
 
 ## Data Transformation
