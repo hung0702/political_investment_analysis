@@ -51,4 +51,4 @@ def print_transactions(transactions, count=5):
 
 if __name__ == "__main__":
     transactions = fetch_transactions(senate_csv_url)
-    # print_transactions(transactions)
+    print_transactions(transactions)
