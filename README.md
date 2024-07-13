@@ -1,4 +1,4 @@
-# politicians_investment_analysis
+# Politicians Investment Analysis
  
 ## Overview
 Analyze stock trading activities of politicians and connect to their legislative activities to establish baseline for all politicians, and identify potential conflicts of interest arising from participation in legislative bodies.
