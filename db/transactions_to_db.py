@@ -1,7 +1,7 @@
 import psycopg2
 import os
 from dotenv import load_dotenv
-from fetch.transactions import fetch_transactions as fetch_transactions
+from fetch.transactions import fetch_transactions
 import config
 
 load_dotenv()
