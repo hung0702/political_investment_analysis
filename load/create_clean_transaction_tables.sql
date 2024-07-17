@@ -5,6 +5,8 @@ CREATE TABLE senate_transactions (
     transaction_date DATE,
     owner VARCHAR(10),
     ticker VARCHAR(30),
+    clean_ticker VARCHAR (10),
+    crypto BOOLEAN,
     asset_description VARCHAR(255),
     asset_type VARCHAR(30),
     type VARCHAR(20),
@@ -23,6 +25,8 @@ CREATE TABLE house_transactions (
     transaction_date DATE,
     owner VARCHAR(10),
     ticker VARCHAR(30),
+    clean_ticker VARCHAR (10),
+    crypto BOOLEAN,
     asset_description VARCHAR(255),
     type VARCHAR(20),
     amount VARCHAR(30),
@@ -37,4 +41,5 @@ CREATE TABLE house_transactions (
     disclosure_date DATE,
     disclosure_year INTEGER
 );
+
 
