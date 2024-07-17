@@ -17,6 +17,7 @@ def clean_ticker(ticker, asset_description):
     if len(ticker) > 5 and asset_description:
         # Sometimes congressmembers enter the ticker in asset_description
         potential_ticker = extract_ticker(asset_description)
+        
         if potential_ticker:
             ticker = potential_ticker
 

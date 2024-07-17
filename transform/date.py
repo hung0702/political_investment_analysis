@@ -1,35 +1,53 @@
-import datetime
+from datetime import datetime
 
-def convert_date(transaction_date_str, disclosure_date_str):
-    # Convert disclosure date to get the correct year
+def parse_date(date_str):
     try:
-        disclosure_date = datetime.datetime.strptime(disclosure_date_str, '%m/%d/%Y').date()
+        return datetime.strptime(date_str, '%m/%d/%Y').date()
     except ValueError:
-        print(f"Failed to parse disclosure date: {disclosure_date_str}")
+        print(f"Could not parse date: {date_str}")
         return None
 
-    # Try to parse the transaction date in MM/DD/YYYY format
-    try:
-        return datetime.datetime.strptime(transaction_date_str, '%m/%d/%Y').date()
-    except ValueError:
-        # If MM/DD/YYYY fails, check if transaction date needs correction
-        if transaction_date_str.startswith('0') or len(transaction_date_str) > 10:
-            # Extract the year from the successfully parsed disclosure date
-            year = disclosure_date.year
-            # Assuming the day and month in transaction_date_str are correct, just the year is wrong
-            month_day = transaction_date_str[-5:]
-            corrected_date_str = f"{year}-{month_day}"
-            try:
-                corrected_date = datetime.datetime.strptime(corrected_date_str, '%Y-%m-%d').date()
-                print(f"Corrected transaction date from {transaction_date_str} to {corrected_date_str}")
-                return corrected_date
-            except ValueError:
-                print(f"Failed to convert using disclosure year: {corrected_date_str}")
-                return None
+def convert_date(disclosure_date_str, transaction_date_str=None):
+    disclosure_date = parse_date(disclosure_date_str)
+    if not disclosure_date:
+        print(f"Could not parse date: {disclosure_date_str}")
+        return None
+
+    if transaction_date_str is None and disclosure_date:
+        return disclosure_date
+
+    # Senate transaction date strings are always 'MM/DD/YYYY'
+    if '/' in transaction_date_str:
+        try:
+            transaction_date = datetime.strptime(transaction_date_str, '%m/%d/%Y').date()
+
+            if disclosure_date >= transaction_date:
+                return transaction_date
+
+            else:
+                print(f"Warning: disclosure date {disclosure_date} is before transaction date {transaction_date}")
+                return transaction_date
+            
+        except ValueError:
+            print(f"Could not parse transaction date: {transaction_date_str}")
+            return None
+
+    # House transaction date strings are always 'YYYY-MM-DD'
+    else:
+        if len(transaction_date_str) == 10 and not transaction_date_str.startswith('0'):
+            return datetime.strptime(transaction_date_str, '%Y-%m-%d').date()
+
+        elif len(transaction_date_str) != 10 or transaction_date_str.startswith('0'):
+            corrected_date_str = f"{disclosure_date.year}-{transaction_date_str[-5:]}"
+            transaction_date = datetime.strptime(corrected_date_str, '%Y-%m-%d').date()
+
+            if disclosure_date >= transaction_date:
+                return transaction_date
+
+            else:
+                print(f"Warning: disclosure date {disclosure_date} is before transaction date {transaction_date}")
+                return transaction_date
+        
         else:
-            # If no corrections are applicable, attempt standard YYYY-MM-DD format
-            try:
-                return datetime.datetime.strptime(transaction_date_str, '%Y-%m-%d').date()
-            except ValueError:
-                print(f"Unhandled date format: {transaction_date_str}")
-                return None
+            print(f"Unhandled transaction date format: {transaction_date_str}")
+            return None

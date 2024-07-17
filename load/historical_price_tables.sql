@@ -1,52 +1,20 @@
-CREATE TABLE senate_transactions_priced (
-    transaction_date DATE,
-    owner VARCHAR(10),
-    ticker VARCHAR(30),
-    clean_ticker VARCHAR (10),
-    asset_description VARCHAR(255),
-    asset_type VARCHAR(30),
-    type VARCHAR(20),
-    amount VARCHAR(30),
-    comment TEXT,
-    party VARCHAR(20),
-    state VARCHAR(2),
-    industry VARCHAR(70),
-    sector VARCHAR(30),
-    senator VARCHAR(50),
-    ptr_link VARCHAR(100),
-    disclosure_date DATE,
-    open NUMERIC(6,4),
-    high NUMERIC(6,4),
-    low NUMERIC(6,4),
-    close NUMERIC(6,4),
-    adjusted_close NUMERIC(6,4),
+CREATE TABLE price_data (
+    price_id SERIAL PRIMARY KEY,
+    chamber VARCHAR(6) CHECK (chamber IN ('house', 'senate')),
+    transaction_id INTEGER,
+    open NUMERIC,
+    close NUMERIC,
+    high NUMERIC,
+    low NUMERIC,
+    adjusted_close NUMERIC,
     volume BIGINT,
-    upload_date DATE
-);
-
-CREATE TABLE house_transactions_priced (
-    transaction_date DATE,
-    owner VARCHAR(10),
-    ticker VARCHAR(30),
-    clean_ticker VARCHAR (10),
-    asset_description VARCHAR(255),
-    type VARCHAR(20),
-    amount VARCHAR(30),
-    party VARCHAR(20),
-    state VARCHAR(2),
-    industry VARCHAR(70),
-    sector VARCHAR(30),
-    cap_gains_over_200_usd BOOLEAN,
-    representative VARCHAR(50),
-    district VARCHAR(4),
-    ptr_link VARCHAR(100),
-    disclosure_date DATE,
-    disclosure_year INTEGER,
-    open NUMERIC(6,4),
-    high NUMERIC(6,4),
-    low NUMERIC(6,4),
-    close NUMERIC(6,4),
-    adjusted_close NUMERIC(6,4),
-    volume BIGINT,
-    upload_date DATE
-);
+    upload_date TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+    UNIQUE (chamber, transaction_id),
+    CONSTRAINT fk_house_transaction
+        FOREIGN KEY (transaction_id)
+        REFERENCES house_transactions(transaction_id)
+        WHEN chamber = 'house',
+    CONSTRAINT fk_senate_transaction
+        FOREIGN KEY (transaction_id)
+        REFERENCES senate_transactions(transaction_id)
+        WHEN chamber = 'senate'
