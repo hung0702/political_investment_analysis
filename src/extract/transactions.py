@@ -1,6 +1,10 @@
+'''This script pulls CSV data from House Stock Watcher and Senate Stock Watcher
+to build the inital list for transformation.
+'''
+
 import csv
 import requests
-from config import HOUSE_CSV_URL, SENATE_CSV_URL
+from ..config import HOUSE_CSV_URL, SENATE_CSV_URL
 
 class Transaction:
     def __init__(self, data, field_map):

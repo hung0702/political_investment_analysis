@@ -1,3 +1,6 @@
+'''This script tries to get clean ticker symbols; which may not always be given
+in the correct format, or may be given in a different field
+'''
 import re
 
 def extract_ticker(text):

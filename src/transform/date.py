@@ -1,3 +1,7 @@
+'''This script fixes the date strings from the CSV data, which could be in
+different formats or malformed
+'''
+
 from datetime import datetime
 
 def parse_date(date_str):

@@ -1,3 +1,7 @@
+'''This script defines the validation rules to mitigate sql injection when using
+parameterized queries for database transactions.
+'''
+
 ALLOWED_TABLES = ['senate_transactions', 'house_transactions']
 ALLOWED_COLUMNS = {
     'senate_transactions': ['transaction_date', 'owner', 'ticker', 'clean_ticker', 'crypto', 'asset_description', 'asset_type', 'type', 'amount', 'comment', 'party', 'state', 'industry', 'sector', 'senator', 'ptr_link', 'disclosure_date'],

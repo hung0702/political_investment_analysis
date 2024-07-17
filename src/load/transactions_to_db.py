@@ -1,11 +1,19 @@
+'''This script pulls CSV data from House Stock Watcher and Senate Stock Watcher
+to build the inital list for transformation. Dates and tickers are transformed,
+then database transactions are validated prior to insertion. Old tables are
+dropped, and new tables are created.
+'''
+
 import psycopg2
+from psycopg2 import sql
 import os
 from dotenv import load_dotenv
-from extract.transactions import fetch_transactions
-from transform.date import convert_date
-from transform.ticker import clean_ticker, is_cryptocurrency
-from load.transactions_validation import validate_transaction_data
-import config
+from ..extract.transactions import fetch_transactions
+from ..transform.date import convert_date
+from ..transform.ticker import clean_ticker, is_cryptocurrency
+from .transactions_validation import validate_transaction_data, ALLOWED_TABLES, ALLOWED_COLUMNS
+
+import src.config as config
 
 
 load_dotenv()
@@ -13,13 +21,7 @@ load_dotenv()
 
 def connect_db():
     try:
-        connection = psycopg2.connect(
-            host=os.getenv('HOST_IP_ADDRESS'),
-            port=os.getenv('HOST_PORT'),
-            dbname=os.getenv('DB_NAME'),
-            user=os.getenv('DB_USER'),
-            password=os.getenv('DB_PASSWORD')
-        )
+        connection = psycopg2.connect(os.getenv('DB_CONFIG'))
         return connection
     except Exception as e:
         print("Error connecting to the database:", e)
@@ -45,22 +47,37 @@ def transform_transaction_data(transaction):
 
 
 def insert_transactions(transactions, connection, table_name):
+    if table_name not in ALLOWED_TABLES:
+        raise ValueError("Invalid table name")
+
     cursor = connection.cursor()
     inserted_count = 0
 
     try:
         for transaction in transactions:
             transformed_data = transform_transaction_data(vars(transaction))
-            validate_transaction_data([transaction], table_name)  # anti-injection measures
+            validate_transaction_data([transaction], table_name)  # Confirm data meets requirements
 
-            columns = ', '.join(transformed_data.keys())
-            value_placeholders = ', '.join(['%s'] * len(transformed_data))
-            sql_template = f"INSERT INTO {table_name} ({columns}) VALUES ({value_placeholders})"
+            columns = list(transformed_data.keys())
+            for col in columns:
+                if col not in ALLOWED_COLUMNS[table_name]:
+                    raise ValueError(f"Invalid column: {col}")
+
+            placeholders = ','.join(['%s'] * len(columns))
+            
+            # Constructing the SQL statement securely
+            sql = psycopg2.sql.SQL("INSERT INTO {table} ({fields}) VALUES ({values})").format(
+                table=psycopg2.sql.Identifier(table_name),
+                fields=psycopg2.sql.SQL(', ').join(map(psycopg2.sql.Identifier, columns)),
+                values=psycopg2.sql.SQL(placeholders)
+            )
 
             values = list(transformed_data.values())
-            cursor.execute(sql_template, values)
+            cursor.execute(sql, values)
+            inserted_count += 1
 
         connection.commit()
+        print(f"Successfully inserted {inserted_count} transactions.")
 
     except Exception as e:
         print("Error inserting transaction:", e)
@@ -69,20 +86,19 @@ def insert_transactions(transactions, connection, table_name):
     finally:
         cursor.close()
 
+    return inserted_count
 
-if __name__ == "__main__":
+
+def main_function():
     conn = connect_db()
     
     if conn:
-        drop_and_create_tables('load/create_clean_transaction_tables.sql', conn)
+        drop_and_create_tables('src/load/create_clean_transaction_tables.sql', conn)
 
         senate_transactions = fetch_transactions(config.SENATE_CSV_URL)
         house_transactions = fetch_transactions(config.HOUSE_CSV_URL)
         
         insert_transactions(senate_transactions, conn, 'senate_transactions')
         insert_transactions(house_transactions, conn, 'house_transactions')
-
-        print(f"Senate transactions: {len(senate_transactions)} inserted")
-        print(f"House transactions: {len(house_transactions)} inserted")
 
         conn.close()
