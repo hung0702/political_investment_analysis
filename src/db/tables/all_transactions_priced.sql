@@ -1,4 +1,4 @@
-CREATE MATERIALIZED VIEW all_transactions_priced AS
+CREATE TABLE all_transactions_priced AS
 SELECT
     COALESCE(s.transaction_id, h.transaction_id) AS transaction_id,
     COALESCE(s.transaction_date, h.transaction_date) AS transaction_date,
@@ -35,11 +35,3 @@ WHERE
     COALESCE(s.clean_ticker, h.clean_ticker) IS NOT NULL;
 
 CREATE UNIQUE INDEX idx_all_transactions_priced ON all_transactions_priced(transaction_id, chamber);
-
-DELETE FROM senate_transactions
-WHERE asset_type IN ('Corporate Bond', 'Cryptocurrency', 'PDF Disclosed Filing', 'Stock Option');
-
-UPDATE senate_transactions
-SET asset_type = 'other'
-WHERE asset_type = 'Other Securities';
-

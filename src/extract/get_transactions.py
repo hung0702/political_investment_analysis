@@ -1,6 +1,6 @@
-'''This script pulls CSV data from House Stock Watcher and Senate Stock Watcher
+"""This script pulls CSV data from House Stock Watcher and Senate Stock Watcher
 to build the inital list for transformation.
-'''
+"""
 
 import csv
 import requests
