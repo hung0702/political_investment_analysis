@@ -25,7 +25,7 @@ def fetch_price_requests(cursor, limit=1000):
     """, (limit,))
     return cursor.fetchall()
 
-def get_stock_prices_batch(ticker, date):
+def get_prices_batch(ticker, date):
     thread_id = threading.current_thread().name  # Get current thread's name
     print(f"{thread_id}: Processing {ticker} for {date}")
     
@@ -69,9 +69,9 @@ def update_price_data(cursor, ticker, date, price_data):
         cursor.connection.rollback()
 
 
-def get_stock_prices_parallel(cursor, ticker_date_pairs, max_workers=100):
+def get_prices_threaded(cursor, ticker_date_pairs, max_workers=100):
     with ThreadPoolExecutor(max_workers=max_workers) as executor:
-        futures = [executor.submit(get_stock_prices_batch, ticker, date) for ticker, date in ticker_date_pairs]
+        futures = [executor.submit(get_prices_batch, ticker, date) for ticker, date in ticker_date_pairs]
         for future in as_completed(futures):
             ticker, date, price_data = future.result()
             update_price_data(cursor, ticker, date, price_data)
@@ -85,7 +85,7 @@ def main():
         price_requests = fetch_price_requests(cursor)
         if price_requests:
             print(f"Fetching prices for {len(price_requests)} ticker-date pairs...")
-            get_stock_prices_parallel(cursor, price_requests)
+            get_prices_threaded(cursor, price_requests)
         else:
             print("No more unrequested price data.")
     except Exception as e:
