@@ -1,34 +1,50 @@
-# Politicians Investment Analysis
- 
-## Overview
-Analyze stock trading activities of politicians and connect to their legislative activities to establish baseline for all politicians, and identify potential conflicts of interest arising from participation in legislative bodies.
+# Political Investment Analysis
 
-## Data Sources
-Stock transaction data are the House and Senate stock watchers. This data is mined from congressional disclosure reports. Eventually, functionality will be built to mine directly from public disclosure reports.
+This project aims to analyze the financial transactions of members of the U.S. Congress as disclosed in the House Stock Watcher and Senate Stock Watcher databases. It extracts, transforms, and loads transaction data into a structured SQL database, then fetches historical stock price information to enable comprehensive analysis of their investment activities.
 
-### Current Progress
-- Basic data ingestion scripts for the House and Senate transaction data have been implemented.
-- Raw data tables for House and for Senate
+## How It Works
 
-### To-Do
-- Schema to tabulate House/Senate transactions
- - Additional tables to handle ticker sectors/industry, price at time of transaction
-- Use NASDAQ data for tickers for enhanced accuracy.
-- Use Yahoo Finance or other historical stock price data to track gains/losses
-- Transition data collection and processing back to Go for improved performance and maintenance.
-- Develop an Apache Airflow script to orchestrate daily updates and handle dependencies between data collection, processing, and storage.
-- Connect to congressional disclosure databases, OCR/tuning, logic to handle amendments and various report types.
+1.  **Extract:** Fetches raw transaction data from CSV sources and stock price data using the yfinance API.
+2.  **Transform:** Cleans, standardizes, and validates the data. This includes parsing dates, cleaning ticker symbols, and handling inconsistencies.
+3.  **Load:** Loads the transformed data into the SQL database, creating the following tables:
+    *   `senate_transactions`, `house_transactions`: Store individual transactions.
+    *   `price_data`: Stores historical stock price data.
+    *   `all_transactions_priced`: Combines transaction and price data for analysis.
+4.  **Manual Corrections:** Applies SQL scripts to fix any remaining data issues identified through manual review.
 
-## Issues Encountered
-- House and Senate Stock Watcher APIs are not comprehensive, nor are they always accurate.
+## Getting Started
 
-## Additional Data Sources to Integrate
-~- **SEC Edgar Forms 4 & 5**: Transactions by investors owning more than 10%, company directors, and executives.~  
-~- **Executive Trade Data**: Focus on transaction type, number of shares, price, transaction date, and post-transaction share total.~
+1.  **Prerequisites:**
+    *   Python 3.11
+    *   PostgreSQL database
+2.  **Setup:**
+    *   Clone this repository.
+    *   Create a `.env` file in the project root and set your database connection details (e.g., `DATABASE_URL=postgresql://user:password@host:port/database_name`).
+    *   Install dependencies using `pip install -r requirements.txt`.
+3.  **Run:**
+    *   First execute `python scripts/transactions.py` to load transaction data.
+    *   Then execute `python scripts/prices.py` to fetch and load price data.
 
-## Data Transformation
-- Model House and Senate data structures, treating all politicians' trades uniformly.
-- **Analysis Goals**:
-  - Investigate if politicians are more likely to invest in sectors related to their recent legislative activities.
-  - Examine the timing of investments relative to committee assignments.
-  - Analyze the frequency and types of sectors in which politicians invest.
+## Project Structure
+
+The project follows an ETL (Extract, Transform, Load) pattern and is organized as follows:
+
+*   **`config.py`:** Stores configuration variables like CSV data source URLs.
+*   **`db/`:**
+    *   **`connection.py`:** Handles database connection setup.
+    *   **`manual_corrections/`:** Contains SQL scripts for manual data corrections.
+    *   **`tables/`:** SQL scripts to define the database schema (`transactions.sql`, `price_data.sql`, `all_transactions_priced.sql`).
+*   **`extract/`:**
+    *   **`get_transactions.py`:** Fetches raw transaction data from CSV files.
+    *   **`get_price_data.py`:** Fetches historical stock price data using the `yfinance` library.
+*   **`load/`:**
+    *   **`transactions_to_db.py`:** Loads transformed transaction data into the database.
+    *   **`price_data_to_db.py`:** Loads fetched price data into the database.
+*   **`transform/`:**
+    *   **`transform_transactions.py`:** Cleans and standardizes raw transaction data.
+*   **`scripts/`:**
+    *   **`transactions.py`:** Main script to run the ETL pipeline for transactions.
+    *   **`prices.py`:** Main script to run the price fetching and loading process.
+*   **`tests/`:** (Empty in the provided structure, but intended for unit tests)
+*   **`README.md`:** This project documentation.
+*   **`requirements.txt`:** Lists project dependencies.
