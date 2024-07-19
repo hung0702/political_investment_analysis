@@ -37,7 +37,7 @@ def create_tables(connection, *sql_files):
         send_sql(connection, sql_script)
         print(f"Tables created from {sql_file}.")
 
-def apply_manual_corrections(connection, *sql_file_paths):
+def apply_manual_corrections(connection, *sql_files):
     for sql_file_path in sql_file_paths:
         with open(sql_file_path, 'r') as file:
             sql_script = file.read()
