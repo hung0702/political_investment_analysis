@@ -1,6 +1,6 @@
-DELETE FROM senate_transactions
-WHERE asset_type IN ('Corporate Bond', 'Cryptocurrency', 'PDF Disclosed Filing', 'Stock Option');
+DELETE FROM all_transactions_priced
+WHERE asset_type IN ('corporate bond', 'cryptocurrency', 'pdf disclosed filing', 'option');
 
-UPDATE senate_transactions
+UPDATE all_transactions_priced
 SET asset_type = 'other'
-WHERE asset_type = 'Other Securities';
+WHERE asset_type = 'other securities';
