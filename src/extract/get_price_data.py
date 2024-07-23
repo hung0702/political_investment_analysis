@@ -1,30 +1,26 @@
 import yfinance as yf
-from datetime import timedelta
-from decimal import Decimal, ROUND_HALF_UP
+from datetime import datetime, timedelta, time
 import threading
+import pytz
+from decimal import Decimal, ROUND_HALF_UP
 
 def round_to_5_decimals(value):
     return Decimal(str(value)).quantize(Decimal('0.00001'), rounding=ROUND_HALF_UP)
 
-def fetch_price_requests(cursor, limit=1000):
-    cursor.execute("""
-        SELECT clean_ticker, transaction_date
-        FROM price_data
-        WHERE NOT requested 
-            AND NOT (clean_ticker = 'VVC' and transaction_date =
-        '2014-05-07') -- this specific price is >2.9e+20
-        ORDER BY transaction_date ASC
-        LIMIT %s
-    """, (limit,))
-    return cursor.fetchall()
-
 def get_prices_batch(ticker, date):
-    thread_id = threading.current_thread().name  # Get current thread's name
+    thread_id = threading.current_thread().name
     print(f"{thread_id}: Processing {ticker} for {date}")
-    
+
+    if not isinstance(date, datetime):
+        date = datetime.combine(date, datetime.min.time())
+    est = pytz.timezone('America/New_York')
+    date_est = est.localize(date)
+    date_utc = date_est.astimezone(pytz.UTC)
+    end_date_utc = date_utc + timedelta(days=1)
+
     stock = yf.Ticker(ticker)
-    end_date = date + timedelta(days=1)  # Ensure the end date is included
-    hist = stock.history(start=date.strftime('%Y-%m-%d'), end=end_date.strftime('%Y-%m-%d'))
+    hist = stock.history(start=date_utc.strftime('%Y-%m-%d'), end=end_date_utc.strftime('%Y-%m-%d'), interval='1d')
+    
     if not hist.empty:
         price_data = {
             'open': round_to_5_decimals(hist['Open'].iloc[0]),
@@ -37,4 +33,5 @@ def get_prices_batch(ticker, date):
     else:
         print(f"No data found for ticker: {ticker} on {date}")
         price_data = None
-    return (ticker, date, price_data)
+
+    return (ticker, date_est.date(), price_data)

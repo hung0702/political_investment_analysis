@@ -29,17 +29,19 @@ from src.load.price_data_to_db import update_price_data
 
 load_dotenv()
 
-def fetch_price_requests(cursor, limit=1000): # adjust limit as necessary
+def fetch_price_requests(cursor, limit=25000): # adjust limit as necessary
     cursor.execute("""
         SELECT clean_ticker, transaction_date
         FROM price_data
-        WHERE NOT requested
+        WHERE NOT requested 
+            AND NOT (clean_ticker = 'VVC' and transaction_date =
+        '2014-05-07') -- this specific price is >2.9e+20
         ORDER BY transaction_date ASC
         LIMIT %s
     """, (limit,))
     return cursor.fetchall()
 
-def get_prices_threaded(cursor, ticker_date_pairs, max_workers=100): # adjust workers as necessary
+def get_prices_threaded(cursor, ticker_date_pairs, max_workers=500): # adjust workers as necessary
     with ThreadPoolExecutor(max_workers=max_workers) as executor:
         futures = [executor.submit(get_prices_batch, ticker, date) for ticker, date in ticker_date_pairs]
         for future in as_completed(futures):
