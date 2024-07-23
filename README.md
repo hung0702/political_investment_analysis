@@ -22,6 +22,7 @@ This project aims to analyze the financial transactions of members of the U.S. C
     *   Create a `.env` file in the project root and set your database connection details (e.g., `DATABASE_URL=postgresql://user:password@host:port/database_name`).
     *   Install dependencies using `pip install -r requirements.txt`.
 3.  **Run:**
+    *   Navigate to the project root directory.
     *   First execute `python scripts/transactions.py` to load transaction data.
     *   Then execute `python scripts/prices.py` to fetch and load price data.
 

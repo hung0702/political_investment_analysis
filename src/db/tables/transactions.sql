@@ -1,6 +1,3 @@
-DROP TABLE IF EXISTS senate_transactions;
-DROP TABLE IF EXISTS house_transactions;
-
 CREATE TABLE senate_transactions (
     transaction_id SERIAL PRIMARY KEY,
     transaction_date DATE,

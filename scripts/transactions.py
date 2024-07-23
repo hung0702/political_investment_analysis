@@ -19,7 +19,7 @@ project_root = os.path.abspath(os.path.join(os.path.dirname(__file__), '..'))
 sys.path.insert(0, project_root)
 
 from src.db.connection import connect_db, drop_tables, create_tables, apply_manual_corrections
-from extract.get_transactions import fetch_transactions
+from src.extract.get_transactions import fetch_transactions
 from src.transform.transform_transactions import transform_transaction_data
 from src.load.transactions_to_db import insert_transactions
 import src.config as config
@@ -29,8 +29,9 @@ def main():
     if conn:
         try:
             # Drop existing transaction tables, create new ones
+            drop_tables(conn, 'senate_transactions', 'house_transactions')
             create_tables(conn, 'src/db/tables/transactions.sql')
-            
+
             # Fetch transactions
             senate_transactions = fetch_transactions(config.SENATE_CSV_URL)
             house_transactions = fetch_transactions(config.HOUSE_CSV_URL)
