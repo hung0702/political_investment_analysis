@@ -1,4 +1,32 @@
 UPDATE house_transactions
+    SET party = 'Republican'
+    WHERE representative ILIKE '%Eric%Burlison%';
+
+UPDATE house_transactions
+    SET party = 'Republican'
+    WHERE representative ILIKE '%Max%Miller%';
+
+UPDATE house_transactions
+    SET party = 'Republican'
+    WHERE representative ILIKE '%Thomas%H%Kean%';
+
+UPDATE house_transactions
+    SET party = 'Democrat'
+    WHERE representative ILIKE '%Shri%Thanedar%';
+
+UPDATE house_transactions
+    SET party = 'Democrat'
+    WHERE representative ILIKE '%Jared%Moskowitz%';
+
+UPDATE house_transactions
+    SET party = 'Democrat'
+    WHERE representative ILIKE '%Jonathan%Jackson%';
+
+UPDATE house_transactions
+    SET party = 'Democrat'
+    WHERE representative ILIKE '%Morgan%Mcgarvey%';
+
+UPDATE house_transactions
     SET clean_ticker = NULL, crypto = True 
     WHERE ticker = 'GBTC';
 
