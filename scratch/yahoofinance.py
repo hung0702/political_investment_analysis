@@ -1,21 +1,37 @@
 import yfinance as yf
-import datetime
+from datetime import datetime, timedelta
+import pytz
 
-# Define the ticker, start date, and end date
-ticker = "LM-SG"
-startDate = datetime.datetime(2023, 7, 14)
-endDate = datetime.datetime(2023, 7, 15)  # Include July 14 in the output by setting endDate to July 15
+# Function to convert EST to UTC
+def est_to_utc(est_date):
+    est = pytz.timezone('America/New_York')
+    utc = pytz.UTC
+    est_date = est.localize(est_date)
+    return est_date.astimezone(utc)
 
-# Fetch data for the ticker
-data = yf.Ticker(ticker)
+# Set up the test
+ticker = 'BREIT'
+est_date = datetime(2023, 3, 22)  # This is in EST
 
-try:
-    # Get historical data using the specified date range
-    historical_data = data.history(start=startDate, end=endDate)
-    print(historical_data)
-except Exception as e:
-    print(f"An error occurred: {e}")
+# Convert EST to UTC
+utc_date = est_to_utc(est_date)
+utc_end_date = est_to_utc(est_date + timedelta(days=1))
 
-# If no data is returned, check if the DataFrame is empty
-if historical_data.empty:
-    print("No data found for the given dates. Please check the dates or ticker symbol.")
+# Fetch data using UTC dates
+stock = yf.Ticker(ticker)
+hist = stock.history(start=utc_date.strftime('%Y-%m-%d'), end=utc_end_date.strftime('%Y-%m-%d'), interval='1d')
+
+# Print the result
+print(f"Data for {ticker} on {est_date.strftime('%Y-%m-%d')} (EST):")
+print(hist)
+
+# Print individual values
+if not hist.empty:
+    print("\nIndividual values:")
+    print(f"Open: {hist['Open'].iloc[0]:.2f}")
+    print(f"High: {hist['High'].iloc[0]:.2f}")
+    print(f"Low: {hist['Low'].iloc[0]:.2f}")
+    print(f"Close: {hist['Close'].iloc[0]:.2f}")
+    print(f"Volume: {hist['Volume'].iloc[0]}")
+else:
+    print("No data available for this date.")

@@ -18,7 +18,7 @@ import os
 project_root = os.path.abspath(os.path.join(os.path.dirname(__file__), '..'))
 sys.path.insert(0, project_root)
 
-from src.db.connection import connect_db, drop_tables, create_tables, apply_manual_corrections
+from src.load.connection import connect_db, drop_tables, create_tables, apply_manual_corrections
 from src.extract.get_transactions import fetch_transactions
 from src.transform.transform_transactions import transform_transaction_data
 from src.load.transactions_to_db import insert_transactions

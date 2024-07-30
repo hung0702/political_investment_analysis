@@ -23,7 +23,7 @@ from concurrent.futures import ThreadPoolExecutor, as_completed
 project_root = os.path.abspath(os.path.join(os.path.dirname(__file__), '..'))
 sys.path.insert(0, project_root)
 
-from src.db.connection import connect_db, drop_tables, create_tables, apply_manual_corrections
+from src.load.connection import connect_db, drop_tables, create_tables, apply_manual_corrections
 from src.extract.get_price_data import get_prices_batch
 from src.load.price_data_to_db import update_price_data
 

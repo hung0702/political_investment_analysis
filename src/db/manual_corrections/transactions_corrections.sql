@@ -35,7 +35,7 @@ UPDATE senate_transactions
     WHERE ticker = 'GBTC';
 
 UPDATE house_transactions
-    SET clean_ticker = 'APPL'
+    SET clean_ticker = 'AAPL'
     WHERE ticker = 'AAPl';
 
 UPDATE house_transactions

@@ -35,6 +35,9 @@ SELECT
         WHEN amount LIKE '%$25,000,000' THEN 25000000
         WHEN amount LIKE '%$50,000,000' THEN NULL
     END AS amount_higher,
+    0 as fewest_stocks,
+    0 as middle_stocks,
+    0 as most_stocks,
     INITCAP(TRIM(t.party)) AS party,
     UPPER(TRIM(t.state)) AS state,
     UPPER(TRIM(t.district)) AS district,
