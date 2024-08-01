@@ -1,30 +1,15 @@
 UPDATE house_transactions
     SET party = 'Republican'
-    WHERE representative ILIKE '%Eric%Burlison%';
-
-UPDATE house_transactions
-    SET party = 'Republican'
-    WHERE representative ILIKE '%Max%Miller%';
-
-UPDATE house_transactions
-    SET party = 'Republican'
-    WHERE representative ILIKE '%Thomas%H%Kean%';
+    WHERE representative ILIKE '%Eric%Burlison%'
+        OR representative ILIKE '%Max%Miller%'
+        OR representative ILIKE '%Thomas%H%Kean%';
 
 UPDATE house_transactions
     SET party = 'Democrat'
-    WHERE representative ILIKE '%Shri%Thanedar%';
-
-UPDATE house_transactions
-    SET party = 'Democrat'
-    WHERE representative ILIKE '%Jared%Moskowitz%';
-
-UPDATE house_transactions
-    SET party = 'Democrat'
-    WHERE representative ILIKE '%Jonathan%Jackson%';
-
-UPDATE house_transactions
-    SET party = 'Democrat'
-    WHERE representative ILIKE '%Morgan%Mcgarvey%';
+    WHERE representative ILIKE '%Shri%Thanedar%'
+        OR representative ILIKE '%Jared%Moskowitz%'
+        OR representative ILIKE '%Jonathan%Jackson%'
+        OR representative ILIKE '%Morgan%Mcgarvey%';
 
 UPDATE house_transactions
     SET clean_ticker = NULL, crypto = True 
